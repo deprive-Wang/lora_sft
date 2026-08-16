@@ -3,6 +3,9 @@ data/
 checkpoints/
 experiments/
 
+# 编辑器
+.vscode/
+
 # Python 缓存
 __pycache__/
 *.py[cod]
