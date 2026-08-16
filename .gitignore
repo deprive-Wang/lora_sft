@@ -1,0 +1,8 @@
+# 数据、权重、实验产物不入库（可由脚本重新生成）
+data/
+checkpoints/
+experiments/
+
+# Python 缓存
+__pycache__/
+*.py[cod]

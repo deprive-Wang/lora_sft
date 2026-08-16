@@ -1,0 +1,11 @@
+# 本地（数据准备与 dataset.py 自检）需要：
+transformers>=4.45
+datasets>=2.20
+# apply_chat_template 的可选依赖，transformers 不会自动安装：
+jinja2>=3.1
+
+# 云端训练（AutoDL）额外安装；torch 用镜像自带版本，不在此列出以免覆盖：
+peft>=0.13
+bitsandbytes>=0.44
+accelerate>=1.0
+tensorboard
