@@ -14,9 +14,12 @@ from __future__ import annotations
 import argparse
 import inspect
 import json
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import TypeAlias
+from typing import TYPE_CHECKING, TypeAlias
+
+if TYPE_CHECKING:
+    from transformers import TrainingArguments
 
 MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
 IGNORE_INDEX = -100
@@ -30,6 +33,7 @@ DEFAULT_LOG_DIR = REPO_ROOT / "experiments" / "qwen2_5_1_5b_ultrachat_lora"
 
 TokenizedSample: TypeAlias = dict[str, list[int]]
 BatchLists: TypeAlias = dict[str, list[list[int]]]
+TrainingArgumentsFactory: TypeAlias = Callable[..., "TrainingArguments"]
 
 
 def validate_sample(sample: object, path: Path, line_number: int) -> TokenizedSample:
@@ -121,7 +125,7 @@ def pad_batch(features: Sequence[TokenizedSample], pad_token_id: int) -> BatchLi
         "attention_mask": batch_attention_mask,
     }
 
-#看到这里，后面往下
+
 class TokenIdDataCollator:
     """将动态 padding 后的 token id batch 转为 PyTorch tensor。"""
 
@@ -215,8 +219,10 @@ def load_training_components():
 
 
 def build_training_arguments(
-    training_arguments_class: object, output_dir: Path, logging_dir: Path
-) -> object:
+    training_arguments_class: TrainingArgumentsFactory,
+    output_dir: Path,
+    logging_dir: Path,
+) -> "TrainingArguments":
     """构造固定训练参数，并兼容 Transformers 4.x 与 5.x。"""
     argument_names = inspect.signature(training_arguments_class).parameters
     evaluation_key = (
