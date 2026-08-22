@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import inspect
 import json
+import os
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, TypeAlias
@@ -230,7 +231,6 @@ def build_training_arguments(
     )
     arguments = {
         "output_dir": str(output_dir),
-        "logging_dir": str(logging_dir),
         "per_device_train_batch_size": 2,
         "per_device_eval_batch_size": 2,
         "gradient_accumulation_steps": 16,
@@ -248,6 +248,8 @@ def build_training_arguments(
         "seed": 42,
         evaluation_key: "epoch",
     }
+    if "logging_dir" in argument_names:
+        arguments["logging_dir"] = str(logging_dir)
     return training_arguments_class(**arguments)
 
 
@@ -309,6 +311,9 @@ def run_training(
         ),
     )
     model.print_trainable_parameters()
+
+    # Transformers 5.x moved TensorBoard's directory out of TrainingArguments.
+    os.environ["TENSORBOARD_LOGGING_DIR"] = str(args.logging_dir)
 
     training_arguments = build_training_arguments(
         training_arguments_class, args.output_dir, args.logging_dir
