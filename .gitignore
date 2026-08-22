@@ -2,6 +2,7 @@
 data/
 checkpoints/
 experiments/
+tf-logs/
 
 # 编辑器
 .vscode/
